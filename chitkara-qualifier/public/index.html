@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester - Chitkara Qualifier</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        select, input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>API Tester</h2>
+        
+        <label>Select Operation:</label>
+        <select id="operation">
+            <option value="fibonacci">Fibonacci (Enter Number)</option>
+            <option value="prime">Prime (Enter Numbers eg: 2,4,7)</option>
+            <option value="lcm">LCM (Enter Numbers eg: 12,18)</option>
+            <option value="hcf">HCF (Enter Numbers eg: 24,36)</option>
+            <option value="AI">AI Question (Enter Text)</option>
+        </select>
+
+        <input type="text" id="inputValue" placeholder="Enter input here...">
+        <button onclick="sendRequest()">Test API</button>
+
+        <h3>Response:</h3>
+        <pre id="responseOutput">Waiting for input...</pre>
+    </div>
+
+    <script>
+        async function sendRequest() {
+            const type = document.getElementById('operation').value;
+            const rawInput = document.getElementById('inputValue').value;
+            let payload = {};
+
+            // Format data based on selection
+            if (type === 'fibonacci') {
+                payload[type] = parseInt(rawInput);
+            } else if (type === 'AI') {
+                payload[type] = rawInput;
+            } else {
+                // Convert "1, 2, 3" string into array [1, 2, 3]
+                payload[type] = rawInput.split(',').map(num => parseInt(num.trim()));
+            }
+
+            try {
+                const res = await fetch('/bfhl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                document.getElementById('responseOutput').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('responseOutput').textContent = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
